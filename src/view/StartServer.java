@@ -7,16 +7,26 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JTable;
+import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import audio.MP3Player;
+import bean.Music;
 import util.StyleUtil;
 import chat.Server;
+import dao.MusicDao;
+
+import javax.swing.JScrollPane;
+
+import java.util.Vector;
 
 public class StartServer {
 
@@ -27,7 +37,11 @@ public class StartServer {
 	JLabel status = new JLabel("服务器已停止");
 	JButton close = new JButton("\u5173\u95ED\u670D\u52A1\u5668");
 	JButton start = new JButton("\u542F\u52A8\u670D\u52A1\u5668");
-	private final JButton button = new JButton("\u7BA1\u7406\u7BA1\u7406\u5458");
+	private final JButton button = new JButton("\u7BA1\u7406\u5728\u7EBF\u7528\u6237");
+	private final JScrollPane scrollPane = new JScrollPane();
+	private static JList<Music> jList;
+	private static JLabel nowMusic=new JLabel("当前播放音乐：无");
+	
 	/**
 	 * Launch the application.
 	 */
@@ -55,8 +69,10 @@ public class StartServer {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	
 	private void initialize() {
 		frame = new JFrame();
+		frame.setResizable(false);
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
@@ -65,13 +81,13 @@ public class StartServer {
 			}
 		});
 		frame.setTitle("\u670D\u52A1\u5668\u7BA1\u7406");
-		frame.setBounds(100, 100, 291, 219);
+		frame.setBounds(100, 100, 371, 348);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		JLabel lblEwLabel = new JLabel("\u670D\u52A1\u5668\u7BA1\u7406");
 		lblEwLabel.setFont(new Font("方正舒体", Font.BOLD, 25));
-		lblEwLabel.setBounds(15, 10, 226, 31);
+		lblEwLabel.setBounds(15, 10, 143, 31);
 		frame.getContentPane().add(lblEwLabel);
 		
 		
@@ -105,16 +121,30 @@ public class StartServer {
 		frame.getContentPane().add(table);
 		
 		
-		status.setBounds(26, 100, 72, 15);
+		status.setBounds(162, 22, 72, 15);
 		frame.getContentPane().add(status);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showManageDialog();
 			}
 		});
-		button.setBounds(15, 134, 93, 29);
+		button.setBounds(221, 51, 134, 29);
 		
 		frame.getContentPane().add(button);
+		
+		JLabel label = new JLabel("\u6B4C\u66F2\u5217\u8868");
+		label.setFont(new Font("宋体", Font.PLAIN, 16));
+		label.setBounds(38, 90, 79, 31);
+		frame.getContentPane().add(label);
+	
+		//歌曲列表
+		jList=new JList<>(MusicDao.musicList);
+		scrollPane.setBounds(15, 123, 120, 143);
+		frame.getContentPane().add(scrollPane);
+		scrollPane.setViewportView(jList);
+		nowMusic.setLocation(15, 276);
+		nowMusic.setSize(120, 15);
+		frame.getContentPane().add(nowMusic);
 		//初始化管理用户对话框
 		dialog=new JDialog(frame,true);
 		dialog.setTitle("管理用户");
@@ -125,9 +155,15 @@ public class StartServer {
 		dialog.setLocationRelativeTo(frame);
 		
 		
+		
 	}
 	public void showManageDialog()
 	{
 	       dialog.setVisible(true);    
+	}
+	//更新音乐标签
+	public static void changeMusicStatus(int index,Music m){
+		nowMusic.setText("当前播放的音乐:"+m.getName());
+		jList.setSelectedIndex(index);
 	}
 }

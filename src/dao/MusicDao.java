@@ -1,15 +1,14 @@
 package dao;
 
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import bean.Music;
 
 public class MusicDao {
 	private static Properties musicProperties=new Properties();
-	private static List<Music> musicList;
+	public static Vector<Music> musicList;
 	private static Music nowMusic;
 	static{
 		setMusicList();
@@ -35,7 +34,7 @@ public class MusicDao {
 		}
 		
 	}
-	public static List<Music> setMusicList()
+	public static Vector<Music> setMusicList()
 	{
 		try {
 			musicProperties.load(new FileInputStream("music.properties"));
@@ -43,7 +42,7 @@ public class MusicDao {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
 		}
-		musicList=new ArrayList<Music>();
+		musicList=new Vector<Music>();
 		Properties p=musicProperties;
 		for(Object key:p.keySet())
 		{
